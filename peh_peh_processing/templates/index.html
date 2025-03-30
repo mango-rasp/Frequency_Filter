@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frequency Filter (FF) </title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Frequency Filter</h1>
+    <form id = "uploadForm">
+        <input type="file" id="audioFile" accept=".wav" required><br><br>
+        Lower-bound Frequency (hertz): <input type="number" id="low" step="1" required><br>
+        Upper-bound Frequency (hertz): <input type="number" id="upper" step="1" required<br><br>
+        <button type="submit">Process Audio</button>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const audioFile = document.getElementById('audioFile').files[0];
+            const lower = document.getElementById('low').value;
+            const upper = document.getElementById('upper').value;
+
+            formData.append('audio', audioFile);
+            formData.append('low', lower);
+            formData.append('upper', upper);
+
+            try {
+                const response = await fetch('http://localhost:5000/process-audio', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if(response.ok){
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = 'edited_audio.wav';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }else{
+                    alert('Error processing audio');
+                }
+            } catch (error){
+                console.log('Error: ', error);
+            }
+
+        });
+    </script>
+
+</body>
+</html>
