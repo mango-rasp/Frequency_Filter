@@ -30,13 +30,12 @@ def process_audio():
     sig_int16 = np.frombuffer(raw_data, dtype=np.int16)
     sig = sig_int16.astype(np.float32) / 32768.0
 
-    freq_dom = np.fft.rfft(sig)
-    freq_3 = freq_dom.copy()
+    freq_3 = sig
 
     frequency_cutoff2 = upper_hertz
     frequency_cutoff3 = lower_hertz
-    cutoff_index2 = int(frequency_cutoff2/(aud_framerate/2/len(freq_dom)))
-    cutoff_index3 = int(frequency_cutoff3/(aud_framerate/2/len(freq_dom)))
+    cutoff_index2 = int(frequency_cutoff2/(aud_framerate/2/len(sig)))
+    cutoff_index3 = int(frequency_cutoff3/(aud_framerate/2/len(sig)))
     freq_3[cutoff_index2:] = 0
     freq_3[:cutoff_index3] = 0
 
